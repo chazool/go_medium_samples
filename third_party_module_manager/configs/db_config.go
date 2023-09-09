@@ -8,9 +8,12 @@ import (
 	"gorm.io/gorm"
 )
 
-var dbCon *gorm.DB
+var dbCon DBConnection
 
-type DB struct {
+type DBConnection *gorm.DB
+
+// DBConfig defines the database configuration parameters.
+type DBConfig struct {
 	_        struct{}
 	Host     string
 	User     string
@@ -22,10 +25,11 @@ type DB struct {
 }
 
 type DBOperator struct {
-	Con *gorm.DB
+	Con DBConnection
 }
 
-func (db *DB) NewConnect() (*gorm.DB, error) {
+// NewConnect initializes the database connection based on the provided config.
+func (db *DBConfig) NewConnect() (DBConnection, error) {
 	dsn := "host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s"
 	dialector := postgres.Open(fmt.Sprintf(dsn, db.Host, db.User, db.Password, db.DB, db.Port, db.SSLMode, db.TimeZone))
 	con, err := gorm.Open(dialector, &gorm.Config{})
@@ -39,15 +43,15 @@ func (db *DB) NewConnect() (*gorm.DB, error) {
 }
 
 func (db *DBOperator) Save(value interface{}) error {
-	return db.Con.Create(value).Error
+	return db.Con.Statement.Create(value).Error
 }
 
 func (db *DBOperator) Find(dest interface{}) error {
-	return db.Con.Find(dest).Error
+	return db.Con.Statement.Find(dest).Error
 }
 
 func InitDBConnection() {
-	dbConfig := DB{
+	dbConfig := DBConfig{
 		Host:     "localhost",
 		User:     "postgres",
 		Password: "postgres",
@@ -63,6 +67,6 @@ func InitDBConnection() {
 	dbCon = dbcon
 }
 
-func GetDBConnection() *gorm.DB {
+func GetDBConnection() DBConnection {
 	return dbCon
 }
