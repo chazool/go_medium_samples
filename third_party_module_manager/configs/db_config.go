@@ -28,8 +28,8 @@ type DBOperator struct {
 	Con DBConnection
 }
 
-// NewConnect initializes the database connection based on the provided config.
-func (db *DBConfig) NewConnect() (DBConnection, error) {
+// NewConnection initializes the database connection based on the provided config.
+func (db *DBConfig) NewConnection() (DBConnection, error) {
 	dsn := "host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s"
 	dialector := postgres.Open(fmt.Sprintf(dsn, db.Host, db.User, db.Password, db.DB, db.Port, db.SSLMode, db.TimeZone))
 	con, err := gorm.Open(dialector, &gorm.Config{})
@@ -60,11 +60,11 @@ func InitDBConnection() {
 		SSLMode:  "disable",
 		TimeZone: "Asia/Shanghai",
 	}
-	dbcon, err := dbConfig.NewConnect()
+	con, err := dbConfig.NewConnection()
 	if err != nil {
 		return
 	}
-	dbCon = dbcon
+	dbCon = con
 }
 
 func GetDBConnection() DBConnection {
