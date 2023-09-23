@@ -42,14 +42,17 @@ func (db *DBConfig) NewConnection() (DBConnection, error) {
 	return con, nil
 }
 
+// Save saves the given value to the database.
 func (db *DBOperator) Save(value interface{}) error {
 	return db.Con.Statement.Create(value).Error
 }
 
+// Find finds and retrieves data from the database and stores it in dest.
 func (db *DBOperator) Find(dest interface{}) error {
 	return db.Con.Statement.Find(dest).Error
 }
 
+// InitDBConnection initializes the database connection.
 func InitDBConnection() {
 	dbConfig := DBConfig{
 		Host:     "localhost",
@@ -67,6 +70,7 @@ func InitDBConnection() {
 	dbCon = con
 }
 
+// GetDBConnection returns the database connection.
 func GetDBConnection() DBConnection {
 	return dbCon
 }
